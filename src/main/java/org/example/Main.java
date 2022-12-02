@@ -3,7 +3,21 @@ package org.example;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -27,7 +41,7 @@ class Line {
         b = Y - X * k;
     }
 
-    public static void Sol(Line d1, Line d2) {
+    public static void SolTXT(Line d1, Line d2) {
         if (d1.k == d2.k && d1.b != d2.b) {
             System.out.println("line 1: y = " + d1.k + "x + " + d1.b + "; line 2: y = " + d2.k + "x + " + d2.b + "; are ||");
         } else if (d1.k == d2.k && d1.b == d2.b) {
@@ -113,31 +127,98 @@ class WorkWithJSON {
     }
 }
 
+class WorkWithXML
+{
+    public static Node getLanguage(Document doc, String name1, String name2, String dot) {
+        Element lines = doc.createElement("Lines");
+        lines.appendChild(getLanguageElements(doc, lines, "First", name1));
+        lines.appendChild(getLanguageElements(doc, lines, "Second", name2));
+        lines.appendChild(getLanguageElements(doc, lines, "dot", dot));
+        return lines;
+    }
+
+    private static Node getLanguageElements(Document doc, Element element, String name, String value) {
+        Element node = doc.createElement(name);
+        node.appendChild(doc.createTextNode(value));
+        return node;
+    }
+}
+
+
 public class Main {
 
-    public static void main(String[] args) throws IOException {
-        TreeMap<Integer, Line> map = new TreeMap<>();
-        ArrayList<Res> Res = new ArrayList<Res>();
-        System.out.println("Hello world!");
+    public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException, TransformerException {
+        TreeMap<Integer, Line> mapJSON = new TreeMap<>();
+        ArrayList<Res> ResJSON = new ArrayList<Res>();
         ArrayList<Line> linesJ = WorkWithJSON.ReadFromFileJSON("jsonin.json");
-        System.out.println(linesJ.size());
         for(int i = 0; i < linesJ.size(); i++)
         {
-            System.out.println(linesJ.get(0).x + "; " + linesJ.get(0).y + " : "+ linesJ.get(0).x1 + "; " + linesJ.get(0).y1);
+            mapJSON.put(i+1, linesJ.get(i));
         }
-        for(int i = 0; i < linesJ.size(); i++)
-        {
-            map.put(i+1, linesJ.get(i));
-        }
-        String res, line1, line2;
-        for(int i = 1; i < map.size(); i++) {
-            for (int j = i + 1; j <= map.size(); j++) {
-                res = map.get(i).SolXML(map.get(i), map.get(j));
-                line1 = "y = " + map.get(i).k + "x + " + map.get(i).b;
-                line2 = "y = " + map.get(j).k + "x + " + map.get(j).b;
-                Res.add(new Res(line1, line2, res));
+        String resJ, line1J, line2J;
+        for(int i = 1; i < mapJSON.size(); i++) {
+            for (int j = i + 1; j <= mapJSON.size(); j++) {
+                resJ = mapJSON.get(i).SolXML(mapJSON.get(i), mapJSON.get(j));
+                line1J = "y = " + mapJSON.get(i).k + "x + " + mapJSON.get(i).b;
+                line2J = "y = " + mapJSON.get(j).k + "x + " + mapJSON.get(j).b;
+                ResJSON.add(new Res(line1J, line2J, resJ));
             }
         }
-        WorkWithJSON.WriteInFileJSON(Res);
+        WorkWithJSON.WriteInFileJSON(ResJSON);
+
+        TreeMap<Integer, Line> mapXML = new TreeMap<>();
+        ArrayList<Integer> dotsXML = new ArrayList<Integer>();
+        int k = 1;
+
+        DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document document = documentBuilder.parse("input.xml");
+
+        Node root = document.getDocumentElement().getFirstChild();
+        Node line = root.getNextSibling();
+        while(line != null)
+        {
+            String str = line.getTextContent();
+            String regex = "[^\\d]";
+
+            String[] reg = str.split(regex);
+
+            for(String word : reg){
+                try {
+                    Integer rez = Integer.valueOf(word);
+                    dotsXML.add(rez);
+                } catch (NumberFormatException e) {
+                }
+            }
+            mapXML.put(k, new Line(dotsXML.get(0), dotsXML.get(1), dotsXML.get(2), dotsXML.get(3)));
+            dotsXML.clear();
+            line = line.getNextSibling().getNextSibling();
+            k++;
+        }
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        builder = factory.newDocumentBuilder();
+        Document document2 = builder.newDocument();
+        Element element = document2.createElementNS("lines", "answer");
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transform = transformerFactory.newTransformer();
+        transform.setOutputProperty(OutputKeys.INDENT, "yes");
+        DOMSource source = new DOMSource(document2);
+        StreamResult result = new StreamResult(new File("out.xml"));
+        String answerXML = mapXML.get(1).SolXML(mapXML.get(1), mapXML.get(2));
+        String line1XML = "y = " + mapXML.get(1).k + "x + " + mapXML.get(1).b;
+        String line2XML = "y = " + mapXML.get(2).k + "x + " + mapXML.get(2).b;
+        document2.appendChild(element);
+        element.appendChild(WorkWithXML.getLanguage(document2, line1XML, line2XML, answerXML));
+        for(int i = 1; i <= mapXML.size() - 1; i++)
+        {
+            for(int j = i + 1; j <= mapXML.size(); j++)
+            {
+                answerXML = mapXML.get(i).SolXML(mapXML.get(i), mapXML.get(j));
+                line1XML = "y = " + mapXML.get(i).k + "x + " + mapXML.get(i).b;
+                line2XML = "y = " + mapXML.get(j).k + "x + " + mapXML.get(j).b;
+                element.appendChild(WorkWithXML.getLanguage(document2, line1XML, line2XML, answerXML));
+            }
+        }
+        transform.transform(source, result);
     }
 }

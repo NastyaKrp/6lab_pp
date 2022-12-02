@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<answer xmlns="lines">
+    <Lines>
+        <First>y = -1.0x + 8.0</First>
+        <Second>y = 2.0x + -13.0</Second>
+        <dot>(7.0; 1.0)</dot>
+    </Lines>
+    <Lines>
+        <First>y = -1.0x + 8.0</First>
+        <Second>y = 2.0x + -13.0</Second>
+        <dot>(7.0; 1.0)</dot>
+    </Lines>
+    <Lines>
+        <First>y = -1.0x + 8.0</First>
+        <Second>y = 5.0x + -5.0</Second>
+        <dot>(2.1666666666666665; 5.833333333333334)</dot>
+    </Lines>
+    <Lines>
+        <First>y = -1.0x + 8.0</First>
+        <Second>y = 1.5x + 2.0</Second>
+        <dot>(2.4; 5.6)</dot>
+    </Lines>
+    <Lines>
+        <First>y = -1.0x + 8.0</First>
+        <Second>y = 1.0x + 0.0</Second>
+        <dot>(4.0; 4.0)</dot>
+    </Lines>
+    <Lines>
+        <First>y = -1.0x + 8.0</First>
+        <Second>y = 1.0x + -2.0</Second>
+        <dot>(5.0; 3.0)</dot>
+    </Lines>
+    <Lines>
+        <First>y = 2.0x + -13.0</First>
+        <Second>y = 5.0x + -5.0</Second>
+        <dot>(-2.6666666666666665; -18.333333333333332)</dot>
+    </Lines>
+    <Lines>
+        <First>y = 2.0x + -13.0</First>
+        <Second>y = 1.5x + 2.0</Second>
+        <dot>(30.0; 47.0)</dot>
+    </Lines>
+    <Lines>
+        <First>y = 2.0x + -13.0</First>
+        <Second>y = 1.0x + 0.0</Second>
+        <dot>(13.0; 13.0)</dot>
+    </Lines>
+    <Lines>
+        <First>y = 2.0x + -13.0</First>
+        <Second>y = 1.0x + -2.0</Second>
+        <dot>(11.0; 9.0)</dot>
+    </Lines>
+    <Lines>
+        <First>y = 5.0x + -5.0</First>
+        <Second>y = 1.5x + 2.0</Second>
+        <dot>(2.0; 5.0)</dot>
+    </Lines>
+    <Lines>
+        <First>y = 5.0x + -5.0</First>
+        <Second>y = 1.0x + 0.0</Second>
+        <dot>(1.25; 1.25)</dot>
+    </Lines>
+    <Lines>
+        <First>y = 5.0x + -5.0</First>
+        <Second>y = 1.0x + -2.0</Second>
+        <dot>(0.75; -1.25)</dot>
+    </Lines>
+    <Lines>
+        <First>y = 1.5x + 2.0</First>
+        <Second>y = 1.0x + 0.0</Second>
+        <dot>(-4.0; -4.0)</dot>
+    </Lines>
+    <Lines>
+        <First>y = 1.5x + 2.0</First>
+        <Second>y = 1.0x + -2.0</Second>
+        <dot>(-8.0; -10.0)</dot>
+    </Lines>
+    <Lines>
+        <First>y = 1.0x + 0.0</First>
+        <Second>y = 1.0x + -2.0</Second>
+        <dot>are ||</dot>
+    </Lines>
+</answer>
