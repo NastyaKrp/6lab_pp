@@ -5,8 +5,8 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class Main {
@@ -32,5 +32,17 @@ public class Main {
 
         TreeMap<Integer, Line> mapXML = XML.ReadXML("input.xml");
         XML.WriteXML(mapXML, "out.xml");
+
+        Comparator<Line> byK = (Line o1, Line o2) -> Double.toString(o1.k).compareTo(Double.toString(o2.k));
+        LinkedHashMap<Integer, Line> sortedMap = mapJSON.entrySet().stream()
+                .sorted(Map.Entry.<Integer, Line>comparingByValue(byK))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+        Set set = sortedMap.entrySet();
+        Iterator it = set.iterator();
+        while(it.hasNext()) {
+            Map.Entry me = (Map.Entry) it.next();
+            mapJSON.get(me.getKey()).Print();
+        }
     }
 }

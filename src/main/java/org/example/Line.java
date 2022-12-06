@@ -17,6 +17,10 @@ class Line {
         b = Y - X * k;
     }
 
+    public void Print() {
+        System.out.println("k = " + this.k + ", y = " + this.k + "x + (" + this.b + ")" );
+    }
+
     public static void SolTXT(Line d1, Line d2) {
         if (d1.k == d2.k && d1.b != d2.b) {
             System.out.println("line 1: y = " + d1.k + "x + " + d1.b + "; line 2: y = " + d2.k + "x + " + d2.b + "; are ||");
