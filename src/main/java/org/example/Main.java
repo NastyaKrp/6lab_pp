@@ -2,16 +2,25 @@ package org.example;
 
 import org.xml.sax.SAXException;
 
+import javax.crypto.*;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
 import java.util.stream.Collectors;
-
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException, TransformerException {
+    public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException, TransformerException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         TreeMap<Integer, Line> mapJSON = new TreeMap<>();
         ArrayList<Res> ResJSON = new ArrayList<Res>();
         ArrayList<Line> linesJ = json.ReadFromFileJSON("jsonin.json");
@@ -44,5 +53,59 @@ public class Main {
             Map.Entry me = (Map.Entry) it.next();
             mapJSON.get(me.getKey()).Print();
         }
+
+        //------- Rar archiving --------
+
+        ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream("output.rar"));
+        FileInputStream fileInputStream = new FileInputStream("out_file.json");
+        ZipEntry zipEntry = new ZipEntry("out_file.json");
+        zipOutputStream.putNextEntry(zipEntry);
+        zipOutputStream.write(fileInputStream.readAllBytes());
+        zipOutputStream.closeEntry();
+        fileInputStream = new FileInputStream("out.xml");
+        zipEntry = new ZipEntry("out.xml");
+        zipOutputStream.putNextEntry(zipEntry);
+        zipOutputStream.write(fileInputStream.readAllBytes());
+        zipOutputStream.closeEntry();
+        zipOutputStream.close();
+
+        //------------------------------
+
+        //------- Jar archiving --------
+
+        JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream("output.jar"));
+        fileInputStream = new FileInputStream("out_file.json");
+        JarEntry jarEntry = new JarEntry("out_filet.json");
+        jarOutputStream.putNextEntry(jarEntry);
+        jarOutputStream.write(fileInputStream.readAllBytes());
+        jarOutputStream.closeEntry();
+        fileInputStream = new FileInputStream("out.xml");
+        jarEntry = new JarEntry("out.xml");
+        jarOutputStream.putNextEntry(jarEntry);
+        jarOutputStream.write(fileInputStream.readAllBytes());
+        jarOutputStream.closeEntry();
+        jarOutputStream.close();
+
+        //------------------------------
+
+        //--------- Encryption ----------
+
+        Cipher cipher_encrypted = Cipher.getInstance("AES");
+        KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+        Key key = keyGenerator.generateKey();
+        cipher_encrypted.init(Cipher.ENCRYPT_MODE, key);
+        byte[] cipherText = cipher_encrypted.doFinal(new FileInputStream("out_file.json").readAllBytes());
+        FileOutputStream fileOutputStream = new FileOutputStream("output_encrypted.json");
+        fileOutputStream.write(cipherText);
+        fileOutputStream.close();
+
+        Cipher cipher_deencrypted = Cipher.getInstance("AES");
+        cipher_deencrypted.init(Cipher.DECRYPT_MODE, key);
+        byte[] cipher_deencrypted_Text = cipher_deencrypted.doFinal(new FileInputStream("output_encrypted.json").readAllBytes());
+        fileOutputStream = new FileOutputStream("output_deencrypted.json");
+        fileOutputStream.write(cipher_deencrypted_Text);
+        fileOutputStream.close();
+
+        //------------------------------
     }
 }
